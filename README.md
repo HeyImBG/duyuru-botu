@@ -6,7 +6,7 @@ Gebze Teknik Üniversitesi **Genel Duyurular** ve **Siber Güvenlik Meslek Yüks
 
 ## 📌 Özellikler
 
-- ⏱ **7/24 Otomatik Takip:** GitHub Actions ile her 30 dakikada bir kontrol (`cron: '*/30 * * * *'`).
+- ⏱ **7/24 Otomatik Takip:** GitHub Actions ile her 30 dakikada bir kontrol (`cron: '*/17,47 * * * *'`).
 - 🔔 **Anlık Telegram Bildirimi:** Sayfa adı, duyuru başlığı ve doğrudan duyuru bağlantısı.
 - 🛡 **Anti-Spam Koruması:** Bot ilk kez çalıştığında geçmişteki onlarca eski duyuruyu göndermez; mevcut duyuruları hafızaya alıp yalnızca botun başladığını bildiren tek bir mesaj gönderir. Sonrasında yalnızca yeni eklenen duyurular bildirilir.
 - 💾 **Kendi Kendini Yöneten Durum:** Ek veritabanı gerektirmez; `seen_announcements.json` dosyası GitHub Actions tarafından otomatik olarak repoya güncellenir (`git push`).

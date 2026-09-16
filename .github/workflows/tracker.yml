@@ -2,8 +2,9 @@ name: GTÜ Duyuru Kontrolü
 
 on:
   schedule:
-    # Her 30 dakikada bir çalışır (UTC)
-    - cron: '*/30 * * * *'
+    # GitHub sunucu yoğunluğundan (00 ve 30 dakikalarından) kaçınmak için
+    # her saatin 17. ve 47. dakikalarında (yine 30 dakikada bir) çalışır
+    - cron: '17,47 * * * *'
   workflow_dispatch: # GitHub arayüzünden manuel olarak tetikleme imkanı
 
 permissions:

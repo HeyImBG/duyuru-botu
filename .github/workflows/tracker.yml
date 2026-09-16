@@ -1,11 +1,7 @@
 name: GTÜ Duyuru Kontrolü
 
 on:
-  schedule:
-    # GitHub sunucu yoğunluğundan (00 ve 30 dakikalarından) kaçınmak için
-    # her saatin 17. ve 47. dakikalarında (yine 30 dakikada bir) çalışır
-    - cron: '17,47 * * * *'
-  workflow_dispatch: # GitHub arayüzünden manuel olarak tetikleme imkanı
+  workflow_dispatch: # cron-job.org API tetiklemesi ve manuel buton için
 
 permissions:
   contents: write # seen_announcements.json dosyasını repoya pushlamak için gerekli

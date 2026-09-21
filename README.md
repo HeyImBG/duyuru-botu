@@ -17,7 +17,7 @@ Gebze Teknik Üniversitesi **Genel Duyurular** ve **Siber Güvenlik Meslek Yüks
 
 Bu sistemi kendi Telegram hesabınız için kurmak isterseniz aşağıdaki adımları sırayla takip etmeniz yeterlidir:
 
-### 1. Bu Repoyu Alın (Fork)
+### 1. Bu Repoyu Alın (Fork veya Kendi Reponuzu Açın)
 - Bu sayfanın sağ üstünde yer alan **Fork** butonuna basarak projeyi kendi GitHub hesabınıza kopyalayın (veya dosyaları kendi oluşturduğunuz yeni bir repoya yükleyin).
 
 ---
@@ -72,7 +72,7 @@ GitHub'ın dahili zamanlayıcısının gecikmelerine takılmamak ve 30 dakikada 
 1. **[cron-job.org](https://cron-job.org)** sitesine ücretsiz kayıt olun.
 2. **Cronjobs** > **Create Cronjob** butonuna tıklayın:
    - **Title:** `GTÜ Duyuru Takip Botu`
-   - **URL:** *(Kendi kullanıcı adınızı ve repo adınızı yazın)*:
+   - **URL:** *(Kullanıcı adınızı ve repo adınızı yazın)*:
      ```text
      https://api.github.com/repos/KULLANICI_ADINIZ/REPO_ADINIZ/actions/workflows/tracker.yml/dispatches
      ```

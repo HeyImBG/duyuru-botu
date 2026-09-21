@@ -361,7 +361,7 @@ def main():
             logger.info(f"'{page_name}' ilk kez taranıyor. Mevcut duyurular kaydediliyor (anti-spam)...")
             updated_seen_data[page_url] = [item["url"] for item in current_items]
             # Sadece hoş geldiniz / aktif edildi maili gönder
-            welcome_subject = f"✅ GTÜ {page_name} Duyuru Takibi Başlatıldı"
+            welcome_subject = f"✅ {page_name} - Duyuru Takibi Başlatıldı"
             welcome_html = build_welcome_email_html(page_name)
             send_email(smtp_user, smtp_pass, recipients, welcome_subject, welcome_html)
             continue
@@ -373,7 +373,7 @@ def main():
             logger.info(f"'{page_name}' için {len(new_items)} YENİ duyuru bulundu!")
             # Eski tarihliden yeniye doğru gönder
             for item in reversed(new_items):
-                subject = f"📢 [GTÜ] {page_name}: {item['title']}"
+                subject = f"📢 {page_name}: {item['title']}"
                 html_body = build_announcement_email_html(page_name, item["title"], item["url"])
 
                 # E-posta bildirimi gönder

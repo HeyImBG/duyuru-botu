@@ -1,101 +1,108 @@
-# 🎓 GTÜ Duyuru Takip & Telegram Bildirim Botu
+# 🎓 GTÜ Duyuru Takip & E-posta Bildirim Sistemi
 
-Gebze Teknik Üniversitesi **Genel Duyurular** ve **Siber Güvenlik Meslek Yüksekokulu Duyuruları** sayfalarını 30 dakikada bir otomatik olarak kontrol eden, yeni bir duyuru yayınlandığında Telegram üzerinden anında bildirim gönderen **%100 ücretsiz, sunucusuz (serverless) ve 7/24 çalışan** otomasyon sistemi.
-
----
-
-## 📌 Özellikler
-
-- ⏱ **7/24 Dakik Takip:** cron-job.org + GitHub Actions mimarisi ile sıfır gecikmeli kontrol.
-- 🔔 **Anlık Telegram Bildirimi:** Sayfa adı, duyuru başlığı ve doğrudan duyuru bağlantısı.
-- 🛡 **Anti-Spam Koruması:** Bot ilk kez çalıştığında geçmişteki yüzlerce eski duyuruyu göndermez; mevcut duyuruları hafızaya alır ve sadece sistemin kurulduğunu bildiren tek bir mesaj gönderir. Sonrasında yalnızca yeni eklenen duyuruları iletir.
-- 💾 **Kendi Kendini Yöneten Durum:** Ek veritabanı veya sunucu gerektirmez; `seen_announcements.json` dosyası GitHub Actions tarafından otomatik olarak güncellenir.
+Gebze Teknik Üniversitesi duyuru sayfalarını 30 dakikada bir otomatik olarak kontrol eden, yeni bir duyuru yayınlandığında ilgili öğrencilerin e-posta adreslerine anında bildirim gönderen **%100 ücretsiz, sunucusuz (serverless) ve 7/24 çalışan** otomasyon sistemi.
 
 ---
 
-## 🚀 Adım Adım Kurulum Rehberi (5 Dakika)
+## 📌 Özellikler ve Takip Edilen Bölümler
 
-Bu sistemi kendi Telegram hesabınız için kurmak isterseniz aşağıdaki adımları sırayla takip etmeniz yeterlidir:
+Bu sistem şu anda GTÜ bünyesindeki 3 farklı duyuru sayfasını takip edip kişiye özel olarak yönlendirmektedir:
 
-### 1. Bu Repoyu Alın (Fork veya Kendi Reponuzu Açın)
-- Bu sayfanın sağ üstünde yer alan **Fork** butonuna basarak projeyi kendi GitHub hesabınıza kopyalayın (veya dosyaları kendi oluşturduğunuz yeni bir repoya yükleyin).
+| Takip Edilen Sayfa | Kategori | Alıcı E-postalar |
+| :--- | :--- | :--- |
+| **GTÜ Genel Duyurular** | Üniversite Geneli | `beratgl2004@gmail.com`, `zeynepulubas112@gmail.com` |
+| **Siber Güvenlik MYO** | Bölüm / Fakülte | `beratgl2004@gmail.com` |
+| **Şehir ve Bölge Planlama** | Bölüm / Fakülte | `zeynepulubas112@gmail.com` |
 
----
-
-### 2. Telegram Botunuzu Kurun ve Bilgilerinizi Alın
-
-#### A. Bot Token Alma:
-1. Telegram'da **[@BotFather](https://t.me/BotFather)** botunu açın ve `/start` deyin.
-2. `/newbot` komutunu gönderin.
-3. Botunuz için bir isim ve kullanıcı adı belirleyin (Örn: `AliGtuDuyuruBot`).
-4. BotFather'ın verdiği **HTTP API Token**'ı kopyalayın (Örn: `7123456789:AAHfk...`).
-5. **ÖNEMLİ:** Yeni kurduğunuz botun sayfasına gidip **Başlat (Start)** butonuna mutlaka basın *(Botun size mesaj atabilmesi için bu şarttır)*.
-
-#### B. Telegram Chat ID Öğrenme:
-1. Telegram'da **[@userinfobot](https://t.me/userinfobot)** botuna gidin ve `/start` yazın.
-2. Botun size söylediği `Id` numarasını (Örn: `123456789`) kopyalayın.
+- 📬 **Kişiye Özel Bildirim:** Herkes sadece kendisini ilgilendiren duyuruların e-postasını alır.
+- 📱 **Mobil Uyumlu Şık E-postalar:** Doğrudan duyuruya yönlendiren buton ve etiket içeren modern HTML tasarımı.
+- 🛡 **Anti-Spam Koruması:** Yeni bir sayfa veya kullanıcı eklendiğinde geçmişteki yüzlerce eski duyuru maile boca edilmez; sadece sistemin başladığını bildiren tek bir hoş geldiniz maili gönderilir, ardından yalnızca **yeni** duyurular iletilir.
+- ⏱ **7/24 Kesintisiz Takip:** `cron-job.org` + `GitHub Actions` altyapısıyla bilgisayarınız kapalıyken bile arka planda tıkır tıkır çalışır.
 
 ---
 
-### 3. GitHub Reponuzun Ayarlarını Yapın
+## 🚀 Adım Adım Kurulum Rehberi (Kendi Bölümünüz İçin Kurun)
+
+Arkadaşlarınız veya başka bölümdeki öğrenciler bu projeyi kendi bölümleri ve e-postaları için kurmak isterse aşağıdaki adımları takip edebilir:
+
+### 1. Bu Repoyu Forklayın
+- Sayfanın sağ üst köşesinde bulunan **Fork** butonuna tıklayarak bu repoyu kendi GitHub hesabınıza kopyalayın.
+
+---
+
+### 2. Kendi Bölümünüzü ve E-postanızı Ayarlayın
+[`tracker.py`](tracker.py) dosyasındaki `PAGES` listesini kendi bölümünüze göre düzenleyin:
+
+```python
+PAGES = [
+    {
+        "name": "GTÜ Genel Duyurular",
+        "url": "https://www.gtu.edu.tr/kategori/9/0/display.aspx",
+        "recipients": ["kendi_mailiniz@gmail.com"],
+    },
+    {
+        "name": "Kendi Bölümünüzün Adı",
+        "url": "https://www.gtu.edu.tr/kategori/XXXX/0/display.aspx",
+        "recipients": ["kendi_mailiniz@gmail.com", "arkadasinizin_maili@gmail.com"],
+    },
+]
+```
+
+---
+
+### 3. Google Uygulama Şifresi (App Password) Alın
+
+Gmail'in bot üzerinden otomatik mail gönderebilmesi için 16 haneli bir uygulama şifresi gerekir:
+
+1. [myaccount.google.com/security](https://myaccount.google.com/security) adresine gidin.
+2. Hesabınızda **2 Adımlı Doğrulama**'nın açık olduğundan emin olun.
+3. [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) sayfasına gidin *(veya arama kutusuna "Uygulama şifreleri" yazın)*.
+4. Uygulama adına `GTU Duyuru Botu` yazıp **Oluştur** deyin.
+5. Verilen **16 haneli kodu** (Örn: `abcd efgh ijkl mnop`) kopyalayın.
+
+---
+
+### 4. GitHub Reponuzun Ayarlarını Yapın
 
 #### A. Gizli Anahtarları (Secrets) Ekleyin:
-1. GitHub reponuzda **Settings** > **Secrets and variables** > **Actions** sekmesine gidin.
+1. GitHub reponuzda **Settings** > **Secrets and variables** > **Actions** bölümüne gidin.
 2. **New repository secret** butonuna tıklayarak şu 2 anahtarı ekleyin:
-   - **`TELEGRAM_BOT_TOKEN`**: BotFather'dan aldığınız token.
-   - **`TELEGRAM_CHAT_ID`**: userinfobot'tan aldığınız numerik ID.
+   - **`GMAIL_USER`**: Gönderici Gmail adresiniz (örn: `adiniz@gmail.com`).
+   - **`GMAIL_APP_PASSWORD`**: Az önce aldığınız 16 haneli Google şifresi.
 
 #### B. Repoya Yazma İzni Verin:
-1. Reponuzda **Settings** > **Actions** > **General** sayfasına gidin.
-2. Sayfanın en altındaki **Workflow permissions** bölümünü bulun.
-3. **Read and write permissions** seçeneğini işaretleyip **Save** deyin.
+1. **Settings** > **Actions** > **General** sayfasına gidin.
+2. Sayfanın altındaki **Workflow permissions** kısmından **Read and write permissions** seçeneğini işaretleyip **Save** butonuna basın.
 
 ---
 
-### 4. GitHub Erişim Anahtarı (Personal Access Token) Alın
+### 5. 7/24 Zamanlayıcıyı Kurun (cron-job.org)
 
-cron-job.org'un reponuzu tetikleyebilmesi için bir GitHub erişim token'ına ihtiyacı vardır:
-1. GitHub'da sağ üstteki profil fotoğrafınıza tıklayıp **Settings**'e gidin.
-2. Sol menünün en altındaki **Developer settings** > **Personal access tokens** > **Tokens (classic)** bölümünü açın.
-3. **Generate new token (classic)** butonuna tıklayın:
-   - **Note:** `CronJob Trigger` yazabilirsiniz.
-   - **Expiration:** No expiration veya 90 days seçin.
-   - **Scopes:** Hem **`repo`** hem de **`workflow`** kutucuklarını mutlaka işaretleyin.
-4. En alttan yeşil **Generate token** butonuna basın ve çıkan `ghp_...` anahtarını kopyalayın.
+Sistemin her 30 dakikada bir otomatik çalışması için:
 
----
-
-### 5. 7/24 Kesintisiz Zamanlayıcıyı Kurun (cron-job.org)
-
-GitHub'ın dahili zamanlayıcısının gecikmelerine takılmamak ve 30 dakikada bir tam vaktinde çalışması için:
-
-1. **[cron-job.org](https://cron-job.org)** sitesine ücretsiz kayıt olun.
+1. **[cron-job.org](https://cron-job.org)** sitesine ücretsiz üye olun.
 2. **Cronjobs** > **Create Cronjob** butonuna tıklayın:
-   - **Title:** `GTÜ Duyuru Takip Botu`
-   - **URL:** *(Kullanıcı adınızı ve repo adınızı yazın)*:
+   - **Title:** `GTÜ Duyuru Takipçisi`
+   - **URL:** 
      ```text
      https://api.github.com/repos/KULLANICI_ADINIZ/REPO_ADINIZ/actions/workflows/tracker.yml/dispatches
      ```
-   - **Schedule:** `Every 30 minutes` (Her 30 dakikada bir).
-3. **Advanced** (Gelişmiş) bölümünü açın:
+   - **Schedule:** `Every 30 minutes`
+3. **Advanced** (Gelişmiş) bölümüne tıklayın:
    - **Request Method:** `POST`
-   - **Request Headers (Başlıklar):** Yanlarındaki **"+" (Ekle)** butonuna basarak şu 3 başlığı ekleyin:
-     | Header Adı (Key) | Değeri (Value) |
+   - **Request Headers:**
+     | Key | Value |
      | :--- | :--- |
-     | `Authorization` | `Bearer ghp_BURAYA_GITHUB_TOKENINIZ` |
+     | `Authorization` | `Bearer GITHUB_PERSONAL_ACCESS_TOKENINIZ` |
      | `Accept` | `application/vnd.github+json` |
      | `User-Agent` | `GTU-Bot` |
-     *(Not: `Bearer` kelimesi ile `ghp_` arasında 1 boşluk olmalıdır).*
-   - **Request Body (Gövde):**
+   - **Request Body:**
      ```json
      {"ref": "main"}
      ```
-4. **Test Run** butonuna tıklayın; `204 No Content` cevabını gördükten sonra **Save** (Kaydet) deyin.
+4. **Test Run** butonuna basın, `204 No Content` gördükten sonra **Save** diyerek kaydedin.
 
 ---
 
 ## 🎉 Tebrikler!
-
-Tüm kurulum tamamlandı!
-- Birkaç saniye içinde Telegram botunuzdan **"GTÜ Duyuru Botu Aktif Edildi!"** mesajı gelecektir.
-- Sistem artık tamamen bulutta, 7/24, sıfır maliyetle çalışmaya devam edecek ve GTÜ'den yeni bir duyuru geldiği an doğrudan cebinize iletilecektir.
+Artık sistem tamamen bulutta 7/24 çalışır. GTÜ'de veya bölümünüzde yeni bir duyuru yayınlandığı an hem sizin hem de arkadaşlarınızın gelen kutusuna şık bir bildirim e-postası düşecektir!

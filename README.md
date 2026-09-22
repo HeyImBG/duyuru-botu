@@ -8,11 +8,11 @@ Gebze Teknik Üniversitesi duyuru sayfalarını 30 dakikada bir otomatik olarak 
 
 Bu sistem şu anda GTÜ bünyesindeki 3 farklı duyuru sayfasını takip edip kişiye özel olarak yönlendirmektedir:
 
-| Takip Edilen Sayfa | Kategori | Alıcı E-postalar |
+| Takip Edilen Sayfa | Kategori | Alıcı Değişkeni (Secret) |
 | :--- | :--- | :--- |
-| **GTÜ Genel Duyurular** | Üniversite Geneli | `beratgl2004@gmail.com`, `zeynepulubas112@gmail.com` |
-| **Siber Güvenlik MYO** | Bölüm / Fakülte | `beratgl2004@gmail.com` |
-| **Şehir ve Bölge Planlama** | Bölüm / Fakülte | `zeynepulubas112@gmail.com` |
+| **GTÜ Genel Duyurular** | Üniversite Geneli | `EMAIL_BERAT`, `EMAIL_ZEYNEP` |
+| **Siber Güvenlik MYO** | Bölüm / Fakülte | `EMAIL_BERAT` |
+| **Şehir ve Bölge Planlama** | Bölüm / Fakülte | `EMAIL_ZEYNEP` |
 
 - 📬 **Kişiye Özel Bildirim:** Herkes sadece kendisini ilgilendiren duyuruların e-postasını alır.
 - 📱 **Mobil Uyumlu Şık E-postalar:** Doğrudan duyuruya yönlendiren buton ve etiket içeren modern HTML tasarımı.
@@ -66,9 +66,11 @@ Gmail'in bot üzerinden otomatik mail gönderebilmesi için 16 haneli bir uygula
 
 #### A. Gizli Anahtarları (Secrets) Ekleyin:
 1. GitHub reponuzda **Settings** > **Secrets and variables** > **Actions** bölümüne gidin.
-2. **New repository secret** butonuna tıklayarak şu 2 anahtarı ekleyin:
-   - **`GMAIL_USER`**: Gönderici Gmail adresiniz (örn: `adiniz@gmail.com`).
+2. **New repository secret** butonuna tıklayarak şu anahtarları ekleyin:
+   - **`GMAIL_USER`**: Gönderici Gmail adresiniz (örn: `botunuz@gmail.com`).
    - **`GMAIL_APP_PASSWORD`**: Az önce aldığınız 16 haneli Google şifresi.
+   - **`EMAIL_BERAT`**: Siber Güvenlik ve Genel Duyuruları alacak e-posta adresi.
+   - **`EMAIL_ZEYNEP`**: Şehir ve Bölge Planlama ile Genel Duyuruları alacak e-posta adresi.
 
 #### B. Repoya Yazma İzni Verin:
 1. **Settings** > **Actions** > **General** sayfasına gidin.

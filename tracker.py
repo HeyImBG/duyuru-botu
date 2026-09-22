@@ -30,29 +30,26 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Alıcı e-postaları ortam değişkenlerinden (GitHub Secrets) alınır (gizlilik için)
+EMAIL_BERAT = os.getenv("EMAIL_BERAT", "").strip()
+EMAIL_ZEYNEP = os.getenv("EMAIL_ZEYNEP", "").strip()
+
 # Takip edilecek sayfalar ve alıcı e-posta adresleri
 PAGES = [
     {
         "name": "GTÜ Genel Duyurular",
         "url": "https://www.gtu.edu.tr/kategori/9/0/display.aspx",
-        "recipients": [
-            "beratgl2004@gmail.com",
-            "zeynepulubas112@gmail.com",
-        ],
+        "recipients": [e for e in [EMAIL_BERAT, EMAIL_ZEYNEP] if e],
     },
     {
         "name": "GTÜ Siber Güvenlik MYO",
         "url": "https://www.gtu.edu.tr/kategori/4302/0/display.aspx",
-        "recipients": [
-            "beratgl2004@gmail.com",
-        ],
+        "recipients": [e for e in [EMAIL_BERAT] if e],
     },
     {
         "name": "GTÜ Şehir ve Bölge Planlama",
         "url": "https://www.gtu.edu.tr/kategori/755/0/display.aspx",
-        "recipients": [
-            "zeynepulubas112@gmail.com",
-        ],
+        "recipients": [e for e in [EMAIL_ZEYNEP] if e],
     },
 ]
 
@@ -321,27 +318,9 @@ def build_welcome_email_html(page_name: str) -> str:
 """
 
 
-def send_telegram_message(token: str, chat_id: str, text: str) -> bool:
-    """Telegram yapılandırılmışsa bildirim atar."""
-    if not token or not chat_id:
-        return False
-    try:
-        res = requests.post(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"},
-            timeout=15,
-        )
-        return res.status_code == 200
-    except Exception as e:
-        logger.error(f"Telegram mesaj hatası: {e}")
-        return False
-
-
 def main():
     smtp_user = os.getenv("GMAIL_USER") or os.getenv("SMTP_EMAIL", "").strip()
     smtp_pass = os.getenv("GMAIL_APP_PASSWORD") or os.getenv("SMTP_PASSWORD", "").strip()
-    tg_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
-    tg_chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
     seen_data, _ = load_seen_announcements()
     total_new_announcements = 0
@@ -378,15 +357,6 @@ def main():
 
                 # E-posta bildirimi gönder
                 send_email(smtp_user, smtp_pass, recipients, subject, html_body)
-
-                # Eğer Telegram bilgisi varsa ve alıcılar arasında beratgl2004@gmail.com varsa Telegram'a da at
-                if tg_token and tg_chat_id and "beratgl2004@gmail.com" in recipients:
-                    tg_msg = (
-                        f"📢 <b>{html.escape(page_name)}</b>\n\n"
-                        f"📌 <b>{html.escape(item['title'])}</b>\n\n"
-                        f"🔗 <a href=\"{item['url']}\">Duyuruyu Görüntüle</a>"
-                    )
-                    send_telegram_message(tg_token, tg_chat_id, tg_msg)
 
                 total_new_announcements += 1
                 time.sleep(1)

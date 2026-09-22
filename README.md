@@ -69,8 +69,8 @@ Gmail'in bot üzerinden otomatik mail gönderebilmesi için 16 haneli bir uygula
 2. **New repository secret** butonuna tıklayarak şu anahtarları ekleyin:
    - **`GMAIL_USER`**: Gönderici Gmail adresiniz (örn: `botunuz@gmail.com`).
    - **`GMAIL_APP_PASSWORD`**: Az önce aldığınız 16 haneli Google şifresi.
-   - **`EMAIL_BERAT`**: Siber Güvenlik ve Genel Duyuruları alacak e-posta adresi.
-   - **`EMAIL_ZEYNEP`**: Şehir ve Bölge Planlama ile Genel Duyuruları alacak e-posta adresi.
+   - **`EMAIL_BERAT`**: Siber Güvenlik ve Genel Duyuruları alacak e-posta adresi.  (Kodda direkt kendi mailinizi eklerseniz gerek yok.)
+   - **`EMAIL_ZEYNEP`**: Şehir ve Bölge Planlama ile Genel Duyuruları alacak e-posta adresi.  (Aynı şekilde)
 
 #### B. Repoya Yazma İzni Verin:
 1. **Settings** > **Actions** > **General** sayfasına gidin.

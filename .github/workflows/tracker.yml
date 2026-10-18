@@ -2,6 +2,12 @@ name: GTÜ Duyuru Kontrolü
 
 on:
   workflow_dispatch: # cron-job.org API tetiklemesi ve manuel buton için
+    inputs:
+      test_siber:
+        description: 'Sadece Siber Güvenlik MYO için TEST bildirimi gönder'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write # seen_announcements.json dosyasını repoya pushlamak için gerekli
@@ -33,9 +39,9 @@ jobs:
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-          EMAIL_BERAT: ${{ secrets.EMAIL_BERAT }}
           EMAIL_ZEYNEP: ${{ secrets.EMAIL_ZEYNEP }}
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          TEST_SIBER: ${{ inputs.test_siber }}
         run: |
           python tracker.py
 

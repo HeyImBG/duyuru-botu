@@ -31,22 +31,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Alıcı e-postaları ortam değişkenlerinden (GitHub Secrets) alınır (gizlilik için)
-EMAIL_BERAT = os.getenv("EMAIL_BERAT", "").strip()
 EMAIL_ZEYNEP = os.getenv("EMAIL_ZEYNEP", "").strip()
 TEAMS_WEBHOOK_URL = os.getenv("TEAMS_WEBHOOK_URL", "").strip()
 
-# Takip edilecek sayfalar ve alıcı e-posta adresleri
+# Takip edilecek sayfalar ve bildirim hedefleri
 PAGES = [
     {
         "name": "GTÜ Genel Duyurular",
         "url": "https://www.gtu.edu.tr/kategori/9/0/display.aspx",
-        "recipients": [e for e in [EMAIL_BERAT, EMAIL_ZEYNEP] if e],
+        "recipients": [e for e in [EMAIL_ZEYNEP] if e],
         "send_to_teams": True,
     },
     {
         "name": "GTÜ Siber Güvenlik MYO",
         "url": "https://www.gtu.edu.tr/kategori/4302/0/display.aspx",
-        "recipients": [e for e in [EMAIL_BERAT] if e],
+        "recipients": [],  # Teams kanalına bildirim gidiyor, e-posta alıcısı yok
         "send_to_teams": True,
     },
     {
@@ -420,6 +419,41 @@ def main():
     smtp_user = os.getenv("GMAIL_USER") or os.getenv("SMTP_EMAIL", "").strip()
     smtp_pass = os.getenv("GMAIL_APP_PASSWORD") or os.getenv("SMTP_PASSWORD", "").strip()
 
+    is_test_siber = (
+        "--test-siber" in sys.argv
+        or os.getenv("TEST_SIBER", "").strip().lower() in ("true", "1", "yes")
+    )
+
+    if is_test_siber:
+        logger.info("🧪 Test Modu Aktif: Sadece Siber Güvenlik MYO için test gönderiliyor...")
+        siber_page = next((p for p in PAGES if "Siber" in p["name"]), None)
+        if siber_page:
+            items = fetch_announcements(siber_page["url"])
+            if items:
+                sample = items[0]
+                logger.info(f"Test için seçilen güncel duyuru: {sample['title']}")
+                subject = f"🧪 [TEST] {siber_page['name']}: {sample['title']}"
+                html_body = build_announcement_email_html(
+                    siber_page["name"],
+                    f"[TEST BİLDİRİMİ] {sample['title']}",
+                    sample["url"],
+                )
+
+                # E-posta testi (eğer alıcı tanımlıysa)
+                if siber_page.get("recipients"):
+                    send_email(smtp_user, smtp_pass, siber_page["recipients"], subject, html_body)
+
+                # Teams testi
+                if TEAMS_WEBHOOK_URL:
+                    send_teams_message(TEAMS_WEBHOOK_URL, f"🧪 [TEST] {siber_page['name']}", sample["title"], sample["url"])
+                else:
+                    logger.warning("TEAMS_WEBHOOK_URL tanımlı değil, Teams mesajı gönderilemedi.")
+
+                logger.info("🧪 Siber Güvenlik MYO test bildirimi tamamlandı!")
+            else:
+                logger.error("Siber Güvenlik duyuruları çekilemedi!")
+        return
+
     seen_data, _ = load_seen_announcements()
     total_new_announcements = 0
     updated_seen_data = dict(seen_data)
@@ -439,9 +473,10 @@ def main():
             logger.info(f"'{page_name}' ilk kez taranıyor. Mevcut duyurular kaydediliyor (anti-spam)...")
             updated_seen_data[page_url] = [item["url"] for item in current_items]
             # Sadece hoş geldiniz / aktif edildi maili gönder
-            welcome_subject = f"✅ {page_name} - Duyuru Takibi Başlatıldı"
-            welcome_html = build_welcome_email_html(page_name)
-            send_email(smtp_user, smtp_pass, recipients, welcome_subject, welcome_html)
+            if recipients:
+                welcome_subject = f"✅ {page_name} - Duyuru Takibi Başlatıldı"
+                welcome_html = build_welcome_email_html(page_name)
+                send_email(smtp_user, smtp_pass, recipients, welcome_subject, welcome_html)
             continue
 
         seen_urls = set(seen_data.get(page_url, []))
@@ -454,8 +489,9 @@ def main():
                 subject = f"📢 {page_name}: {item['title']}"
                 html_body = build_announcement_email_html(page_name, item["title"], item["url"])
 
-                # E-posta bildirimi gönder
-                send_email(smtp_user, smtp_pass, recipients, subject, html_body)
+                # E-posta bildirimi gönder (eğer alıcı tanımlıysa)
+                if recipients:
+                    send_email(smtp_user, smtp_pass, recipients, subject, html_body)
 
                 # Teams kanalına bildirim gönder
                 if send_to_teams and TEAMS_WEBHOOK_URL:

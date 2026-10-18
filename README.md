@@ -8,10 +8,10 @@ Gebze Teknik Üniversitesi duyuru sayfalarını 30 dakikada bir otomatik olarak 
 
 Bu sistem şu anda GTÜ bünyesindeki 3 farklı duyuru sayfasını takip edip kişiye özel olarak yönlendirmektedir:
 
-| Takip Edilen Sayfa | Kategori | Alıcı Değişkeni (Secret) | Teams Kanalı |
+| Takip Edilen Sayfa | Kategori | E-posta Alıcısı | Teams Kanalı |
 | :--- | :--- | :--- | :--- |
-| **GTÜ Genel Duyurular** | Üniversite Geneli | `EMAIL_BERAT`, `EMAIL_ZEYNEP` | Evet |
-| **Siber Güvenlik MYO** | Bölüm / Fakülte | `EMAIL_BERAT` | Evet |
+| **GTÜ Genel Duyurular** | Üniversite Geneli | `EMAIL_ZEYNEP` | Evet |
+| **Siber Güvenlik MYO** | Bölüm / Fakülte | *(Yok - Sadece Teams)* | Evet |
 | **Şehir ve Bölge Planlama** | Bölüm / Fakülte | `EMAIL_ZEYNEP` | Hayır |
 
 - 📬 **Kişiye Özel Bildirim:** Herkes sadece kendisini ilgilendiren duyuruların e-postasını alır.
@@ -69,9 +69,8 @@ Gmail'in bot üzerinden otomatik mail gönderebilmesi için 16 haneli bir uygula
 2. **New repository secret** butonuna tıklayarak şu anahtarları ekleyin:
    - **`GMAIL_USER`**: Gönderici Gmail adresiniz (örn: `botunuz@gmail.com`).
    - **`GMAIL_APP_PASSWORD`**: Az önce aldığınız 16 haneli Google şifresi.
-   - **`EMAIL_BERAT`**: Siber Güvenlik ve Genel Duyuruları alacak e-posta adresi.  (Kodda direkt kendi mailinizi eklerseniz gerek yok.)
-   - **`EMAIL_ZEYNEP`**: Şehir ve Bölge Planlama ile Genel Duyuruları alacak e-posta adresi.  (Aynı şekilde)
-   - **`TEAMS_WEBHOOK_URL`** *(İsteğe Bağlı)*: Duyuruların iletileceği Microsoft Teams kanalının Incoming Webhook URL bağlantısı.
+   - **`EMAIL_ZEYNEP`**: Şehir ve Bölge Planlama ile Genel Duyuruları alacak e-posta adresi.
+   - **`TEAMS_WEBHOOK_URL`**: Siber Güvenlik ve Genel Duyuruların iletileceği Microsoft Teams kanalının Webhook URL bağlantısı.
 
 #### B. Repoya Yazma İzni Verin:
 1. **Settings** > **Actions** > **General** sayfasına gidin.

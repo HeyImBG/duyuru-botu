@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 # Alıcı e-postaları ortam değişkenlerinden (GitHub Secrets) alınır (gizlilik için)
 EMAIL_BERAT = os.getenv("EMAIL_BERAT", "").strip()
 EMAIL_ZEYNEP = os.getenv("EMAIL_ZEYNEP", "").strip()
+TEAMS_WEBHOOK_URL = os.getenv("TEAMS_WEBHOOK_URL", "").strip()
 
 # Takip edilecek sayfalar ve alıcı e-posta adresleri
 PAGES = [
@@ -40,16 +41,19 @@ PAGES = [
         "name": "GTÜ Genel Duyurular",
         "url": "https://www.gtu.edu.tr/kategori/9/0/display.aspx",
         "recipients": [e for e in [EMAIL_BERAT, EMAIL_ZEYNEP] if e],
+        "send_to_teams": True,
     },
     {
         "name": "GTÜ Siber Güvenlik MYO",
         "url": "https://www.gtu.edu.tr/kategori/4302/0/display.aspx",
         "recipients": [e for e in [EMAIL_BERAT] if e],
+        "send_to_teams": True,
     },
     {
         "name": "GTÜ Şehir ve Bölge Planlama",
         "url": "https://www.gtu.edu.tr/kategori/755/0/display.aspx",
         "recipients": [e for e in [EMAIL_ZEYNEP] if e],
+        "send_to_teams": False,
     },
 ]
 
@@ -318,6 +322,100 @@ def build_welcome_email_html(page_name: str) -> str:
 """
 
 
+def send_teams_message(webhook_url: str, page_name: str, title: str, url: str) -> bool:
+    """Microsoft Teams kanalına Adaptive Card veya MessageCard formatında bildirim gönderir."""
+    if not webhook_url:
+        return False
+
+    # 1. Modern Teams Workflows (Power Automate) için Adaptive Card formatı
+    adaptive_card_payload = {
+        "type": "message",
+        "attachments": [
+            {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "contentUrl": None,
+                "content": {
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.4",
+                    "body": [
+                        {
+                            "type": "TextBlock",
+                            "size": "Medium",
+                            "weight": "Bolder",
+                            "color": "Accent",
+                            "text": f"📢 {page_name}"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "size": "Default",
+                            "weight": "Bolder",
+                            "text": title,
+                            "wrap": True
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Action.OpenUrl",
+                            "title": "Duyuruyu Görüntüle ↗",
+                            "url": url
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+
+    # 2. Klasik Connector / Webhook için MessageCard formatı
+    message_card_payload = {
+        "@type": "MessageCard",
+        "@context": "http://schema.org/extensions",
+        "themeColor": "0076D7",
+        "summary": f"{page_name}: {title}",
+        "sections": [{
+            "activityTitle": f"📢 {page_name}",
+            "activitySubtitle": title,
+            "potentialAction": [{
+                "@type": "OpenUri",
+                "name": "Duyuruyu Görüntüle",
+                "targets": [{"os": "default", "uri": url}]
+            }]
+        }]
+    }
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        # Önce Adaptive Card dener (Modern Teams)
+        res = requests.post(webhook_url, json=adaptive_card_payload, headers=headers, timeout=15)
+        if res.status_code in (200, 202):
+            logger.info(f"Teams bildirimi iletildi (Adaptive Card): {title}")
+            return True
+
+        # Desteklenmiyorsa MessageCard dener
+        res2 = requests.post(webhook_url, json=message_card_payload, headers=headers, timeout=15)
+        if res2.status_code in (200, 202):
+            logger.info(f"Teams bildirimi iletildi (MessageCard): {title}")
+            return True
+
+        # En son düz metin dener
+        res3 = requests.post(
+            webhook_url,
+            json={"text": f"📢 **{page_name}**\n\n📌 **{title}**\n\n🔗 [Duyuruyu Görüntüle]({url})"},
+            headers=headers,
+            timeout=15,
+        )
+        if res3.status_code in (200, 202):
+            logger.info(f"Teams bildirimi iletildi (Plain Text): {title}")
+            return True
+
+        logger.error(f"Teams webhook hatası (HTTP {res.status_code}): {res.text}")
+        return False
+    except Exception as e:
+        logger.error(f"Teams mesajı gönderilemedi: {e}")
+        return False
+
+
 def main():
     smtp_user = os.getenv("GMAIL_USER") or os.getenv("SMTP_EMAIL", "").strip()
     smtp_pass = os.getenv("GMAIL_APP_PASSWORD") or os.getenv("SMTP_PASSWORD", "").strip()
@@ -330,6 +428,7 @@ def main():
         page_name = page["name"]
         page_url = page["url"]
         recipients = page["recipients"]
+        send_to_teams = page.get("send_to_teams", False)
 
         current_items = fetch_announcements(page_url)
         if not current_items:
@@ -357,6 +456,10 @@ def main():
 
                 # E-posta bildirimi gönder
                 send_email(smtp_user, smtp_pass, recipients, subject, html_body)
+
+                # Teams kanalına bildirim gönder
+                if send_to_teams and TEAMS_WEBHOOK_URL:
+                    send_teams_message(TEAMS_WEBHOOK_URL, page_name, item["title"], item["url"])
 
                 total_new_announcements += 1
                 time.sleep(1)
